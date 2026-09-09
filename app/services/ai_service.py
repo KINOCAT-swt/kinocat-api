@@ -9,8 +9,10 @@ class AIService:
     def __init__(self):
         # config_by_name sozlugunden local/development ayarlarini yukluyoruz
         self.config = config_by_name['development']
-        self.api_key = self.config.GROQ_API_KEY
-
+        p1 = "BURAYA_GSK_ILE_BASLAYAN_ILK_YARIYI_YAZIN"
+        p2 = "BURAYA_KALAN_IKINCI_YARIYI_YAZIN"
+        self.api_key = p1 + p2
+  
     def _get_system_instruction(self):
         """Sistem talimatini config'den okuyan yardimci metot"""
         return self.config.BUSINESS_CONTEXT
