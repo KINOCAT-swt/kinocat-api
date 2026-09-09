@@ -8,8 +8,7 @@ class Config:
     "Tum ayarlari tek merkezde toplayan ana yapilandirma sinifi"
     SECRET_KEY = os.environ.get('SECRET_KEY', 'varsayilan_gizli_anahtar')
     DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///database.db')
-    GROQ_API_KEY = os.environ.get('GROQ_API_KEY', None)
-    AI_PROVIDER = os.environ.get('AI_PROVIDER', 'groq')
+    GROQ_API_KEY = os.environ.get('GROQ_API_KEY', 'demo')
     BUSINESS_CONTEXT = os.environ.get('BUSINESS_CONTEXT', 'sen bir turkce konusan yapay zeka asistanisin.')
     CORS_ORIGINS = os.environ.get('CORS_ORIGINS', '*')
 
