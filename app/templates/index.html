@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>KINOCAT - Dijital Yayıncılık</title>
+    <style>
+        /* Kutuların Dışarı Taşmasını Önleyen Genel Kural */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* Arka Plan Beyaz (#FFFFFF) ve Genel Yazılar Mor (#8700AC) */
+        body { background-color: #FFFFFF; color: #8700AC; font-family: sans-serif; padding: 40px; }
+        
+        /* Sayfa Düzeni: Logoyu solda tutarken tüm kartları sağ üst köşeye çeker */
+        .sayfa-govdesi { display: flex; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; width: 100%; }
+        
+        /* Logoyu daha da yukarı ve sola kaydırmak için eksi margin değerlerini artırdık */
+        .sol-bölge { flex: 1; min-width: 350px; margin-top: -85px; margin-left: -35px; }
+        .sağ-bölge { max-width: 500px; width: 100%; margin-top: 10px; }
+        
+        /* Büyütülmüş Gerçek KINOCAT Logosunun Ayarı */
+        .logo-resim { height: 340px; width: auto; display: block; }
+        
+        /* Kartın Tam Üstüne Gelen Yeni Alt Slogan Yazısı */
+        .ust-slogan { color: #8700AC; font-weight: bold; font-size: 16px; margin-bottom: 15px; text-align: left; }
+        
+        h3 { color: #8700AC; margin-bottom: 12px; }
+        
+        /* Güvenli Kart Yapısı */
+        .kart { background: #FFFFFF; border: 2px solid #8700AC; padding: 20px; margin-bottom: 25px; border-radius: 8px; width: 100%; box-shadow: 0 4px 10px rgba(135, 0, 172, 0.05); }
+        
+        /* Düzenli input ve buton yerleşimi */
+        input, button { padding: 12px; margin: 8px 0; display: block; width: 100%; border-radius: 4px; font-size: 14px; }
+        input { background: #FFFFFF; color: #000000; border: 1px solid #8700AC; outline: none; }
+        
+        /* Buton Renkleri (Kurumsal Mor #8700AC) */
+        #sor_butonu { background-color: #8700AC; color: white; border: none; font-weight: bold; cursor: pointer; }
+        #kaydet_butonu { background-color: #8700AC; color: white; border: none; font-weight: bold; cursor: pointer; }
+        
+        #cevap_alani { background: #fcf8ff; padding: 12px; min-height: 60px; margin-top: 10px; border: 1px solid #8700AC; color: #000000; border-radius: 4px; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="sayfa-govdesi">
+        <!-- Sol Bölge: İyice yukarı ve sola kaydırılmış logonuz yer alıyor -->
+        <div class="sol-bölge">
+            <img src="{{ url_for('static', filename='logo.png') }}" alt="KINOCAT Logo" class="logo-resim">
+        </div>
+
+        <!-- Sağ Bölge: Hizalanmış Konuşma Balonları ve Form -->
+        <div class="sağ-bölge">
+            
+            <!-- Kartın tam üzerine taşınan alt slogan yazısı -->
+            <div class="ust-slogan">Dijital Yayıncılık Hizmetleri Yapay Zeka Asistanı</div>
+
+            <!-- Yapay Zeka Sohbet Alanı (Kritik Kelime: mesaj) -->
+            <div class="kart">
+                <h3>🎬 KINOCAT Asistanına Sorun</h3>
+                <input type="text" id="mesaj_girisi" placeholder="Sorunuzu buraya yazın...">
+                <button id="sor_butonu" onclick="asistanaSor()">Sor</button>
+                <div id="cevap_alani">Asistan yanıtı burada görünecek...</div>
+            </div>
+
+            <!-- Müşteri Formu (Kritik Kelimeler: isim, telefon) -->
+            <div class="kart">
+                <h3>📞 İletişim Formu</h3>
+                <input type="text" id="isim_girisi" placeholder="Adınız Soyadınız">
+                <input type="text" id="telefon_girisi" placeholder="Telefon Numaranız">
+                <button id="kaydet_butonu" onclick="formuKaydet()">Kaydet</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Bağlantı Mantığı -->
+    <script>
+        async function asistanaSor() {
+            const girdi = document.getElementById('mesaj_girisi').value;
+            if(!girdi) return;
+            
+            const response = await fetch('/api/sohbet', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mesaj: girdi })
+            });
+            const data = await response.json();
+            document.getElementById('cevap_alani').innerText = data.yanit || data.hata;
+        }
+
+        async function formuKaydet() {
+            const isimDegeri = document.getElementById('isim_girisi').value;
+            const telDegeri = document.getElementById('telefon_girisi').value;
+            
+            if(!isimDegeri || !telDegeri) { alert('Lütfen alanları doldurun.'); return; }
+            
+            const response = await fetch('/api/leads', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ isim: isimDegeri, telefon: telDegeri })
+            });
+            const data = await response.json();
+            if(data.basari) { alert('Başarıyla kaydedildi!'); } else { alert('Hata: ' + data.hata); }
+        }
+    </script>
+
+</body>
+</html>

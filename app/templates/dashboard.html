@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>KINOCAT - Müşteri Adayı Yönetim Paneli</title>
+    <style>
+        /* Kutuların Dışarı Taşmasını Önleyen Genel Kural */
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        /* Arka Plan Beyaz (#FFFFFF) ve Genel Yazılar Mor (#8700AC) */
+        body { background-color: #FFFFFF; color: #8700AC; padding: 40px; }
+        
+        /* Başlık Alanı Tasarımı */
+        .panel-baslik { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid #8700AC; padding-bottom: 20px; margin-bottom: 30px; }
+        .panel-baslik h2 { color: #8700AC; font-weight: bold; }
+        
+        /* Yenileme Butonu (Kurumsal Mor #8700AC) */
+        .yenile-buton { background-color: #8700AC; color: white; border: none; padding: 10px 20px; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        
+        /* Sade Tablo Yapısı */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #8700AC; }
+        th { background-color: #fcf8ff; color: #8700AC; font-weight: bold; }
+        td { color: #000000; } /* Veriler net görünsün diye siyah */
+        
+        .bos-mesaj { text-align: center; padding: 20px; color: #666; font-style: italic; }
+    </style>
+</head>
+<body>
+
+    <!-- Üst Panel Başlığı -->
+    <div class="panel-baslik">
+        <h2>🎬 KINOCAT Yönetim Paneli</h2>
+        <button class="yenile-buton" onclick="verileriYükle()">Listeyi Yenile</button>
+    </div>
+
+    <!-- Müşteri Adayları Listesi -->
+    <div style="overflow-x: auto;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Müşteri Adı Soyadı</th>
+                    <th>Telefon Numarası</th>
+                    <th>Kayıt Tarihi (UTC)</th>
+                </tr>
+            </thead>
+            <tbody id="tablo_govdesi">
+                <!-- Veriler JavaScript ile buraya eklenecek -->
+            </tbody>
+        </table>
+        <div id="bos_uyari" class="bos-mesaj" style="display: none;">Henüz kayıtlı müşteri adayı bulunmuyor.</div>
+    </div>
+
+    <!-- En Sade JavaScript Veri Çekme Mantığı -->
+    <script>
+        // Sayfa ilk açıldığında verileri otomatik çek
+        document.addEventListener('DOMContentLoaded', verileriYükle);
+
+        async function verileriYükle() {
+            const tabloGovdesi = document.getElementById('tablo_govdesi');
+            const bosUyari = document.getElementById('bos_uyari');
+            
+            // Tabloyu geçici olarak temizle
+            tabloGovdesi.innerHTML = '';
+            
+            try {
+                // Backend API'den tüm müşteri adaylarını getir (GET)
+                const response = await fetch('/api/leads');
+                const veri = await response.json();
+                
+                if (veri.basari && veri.data.length > 0) {
+                    bosUyari.style.display = 'none';
+                    
+                    // Gelen verileri sırayla tablo satırlarına dönüştür
+                    veri.data.forEach(lead => {
+                        const satir = `
+                            <tr>
+                                <td>${lead.isim}</td>
+                                <td>${lead.telefon}</td>
+                                <td>${lead.tarih || '-'}</td>
+                            </tr>
+                        `;
+                        tabloGovdesi.innerHTML += satir;
+                    });
+                } else {
+                    bosUyari.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Veri çekme hatası:", error);
+                alert("Veritabanından veriler yüklenirken bir hata oluştu.");
+            }
+        }
+    </script>
+
+</body>
+</html>
